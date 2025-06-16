@@ -1,0 +1,91 @@
+{% include 'food_truck_head.html' %}
+
+<div class="update-containers">
+    <div class="timing-card">
+        <h2 class="card-title">Add Truck Timings</h2>
+        <form action="update_truck_timings_action" method="POST" class="form-timing">
+            <div class="form-group">
+                <label for="location_id">Select Location</label>
+                <select name="location_id" id="location_id" class="form-control" style="width: 100%; max-width: 100%;">
+                    <option value="">Choose Location</option>
+                    {% for location in locations %}
+                        <option value="{{ location['_id'] }}" title="{{location['location_name']}} - {{location['address']}}, {{location['city']}}, {{location['state']}}, {{location['zipcode']}}">
+                            {{location['location_name']}} | {{location['address']}} | {{location['city']}}, {{location['state']}}, {{location['zipcode']}}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="day">Select Day</label>
+                <select name="day" id="day" class="form-control">
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                    <option value="Sunday">Sunday</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="start_time">Open Time</label>
+                <input type="time" name="start_time" id="start_time" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="end_time">Close Time</label>
+                <input type="time" name="end_time" id="end_time" class="form-control" required>
+            </div>
+
+            <button type="submit" class="btn-submit">Add Timings</button>
+        </form>
+    </div>
+
+    <div class="timings-container">
+        <h2 class="card-title1" style="color: black;">View Timing</h2>
+        {% for timing in timings %}
+            <div class="timing-sheet">
+                <div class="sheet-header">
+                    <h3>Time Sheet</h3>
+                </div>
+                <div class="sheet-content">
+                    {% set location = get_location_by_location_ids(timing['location_id']) %}
+                    <p style="color: red;"><strong>Location: </strong> {{location['location_name']}}</p>
+                    <p><strong>Day: </strong> {{timing['day']}}</p>
+                    <p><strong>Start: </strong> {{timing['start_time'].strftime("%I:%M %p")}}</p>
+                    <p><strong>End: </strong> {{timing['end_time'].strftime("%I:%M %p")}}</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    /* Fix for select dropdown to show full content */
+select.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    font-size: 14px;
+    color: #333;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+}
+
+select.form-control option {
+    padding: 10px;
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+select.form-control:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+</style>

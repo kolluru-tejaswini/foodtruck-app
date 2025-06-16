@@ -1,0 +1,94 @@
+{% include 'admin_head.html' %}
+
+<div class="layout-wrapper">
+  <div class="form-section">
+    <h3>Add DeliveryBoy Here</h3>
+    <form action="add_delivery_boy_action" method="post">
+      <div class="form-row">
+        <div class="form-field">
+          <label class="form-label" for="name1">First Name</label>
+          <input class="form-input" type="text" maxlength="20" name="name1" id="name1" required placeholder="First Name">
+        </div>
+        <div class="form-field">
+          <label class="form-label" for="name2">Last Name</label>
+          <input class="form-input" type="text"  maxlength="20" name="name2" id="name2" required placeholder="Last Name">
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label class="form-label" for="email">Email</label>
+        <input class="form-input" type="email" name="email" id="email" maxlength="40" required placeholder="Enter Email Address">
+      </div>
+
+      <div class="form-field">
+        <label class="form-label" for="phone">Phone</label>
+        <input class="form-input" type="number" name="phone" id="phone" placeholder="Enter Phone Number" min="1000000000" max="9999999999" required>
+      </div>
+      
+      <script>
+        const phoneInput = document.getElementById('phone');
+        phoneInput.addEventListener('input', function () {
+          if (this.value.length > 10) {
+            this.value = this.value.slice(0, 10); 
+          }
+        });
+      </script>
+
+      <div class="form-field">
+        <label class="form-label" for="password">Password</label>
+        <input class="form-input" type="password" name="password" id="password" minlength="3" maxlength="20" placeholder="Enter Password" required>
+        
+      </div>
+
+      <div class="form-field">
+        <label class="form-label" for="address">Address</label>
+        <textarea class="form-textarea" name="address" id="address" placeholder="Enter Address" required minlength="10" maxlength="50"></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label class="form-label" for="city">City</label>
+          <input class="form-input" type="text" name="city" id="city" maxlength="20" placeholder="Enter City" required>
+        </div>
+
+        <div class="form-field">
+          <label class="form-label" for="state">State</label>
+          <input class="form-input" type="text" name="state" id="state" maxlength="20" placeholder="Enter State" required>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label class="form-label" for="zipcode">Zipcode</label>
+        <input class="form-input" type="number" name="zipcode" id="zipcode" placeholder="Enter Zipcode" min="10000" max="99999" required>
+      </div>
+      <script>
+        const zipcodeInput = document.getElementById('zipcode');
+        zipcodeInput.addEventListener('input', function () {
+            if (this.value.length > 5) {
+                this.value = this.value.slice(0, 5);
+            }
+        });
+    </script>
+      <div class="form-field">
+        <input class="submit-button" type="submit" value="Add Here">
+      </div>
+    </form>
+  </div>
+
+  <div class="cards-section">
+    <div class="cards-header">
+      <h3>All DeliveryBoy Details</h3>
+    </div>
+
+    <div class="cards-container">
+        {% for delivery_boy in delivery_boys %}
+      <div class="card-box">
+        <p><strong>Name:</strong> {{delivery_boy['name1']}} {{delivery_boy['name2']}}</p>
+        <p><strong>Email:</strong> {{delivery_boy['email']}}</p>
+        <p><strong>Phone:</strong> {{delivery_boy['phone']}}</p>
+        <p><strong>Address:</strong> {{delivery_boy['address']}}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>

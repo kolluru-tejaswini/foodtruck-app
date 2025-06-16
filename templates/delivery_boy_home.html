@@ -1,0 +1,251 @@
+{% include 'delivery_boy_head.html' %}
+
+<h2 class="delivery_home">Welcome {{session['role']}}!</h2>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+
+});
+    function get_food_truck_timings(order_id){
+        let order_date = $("#order_date"+order_id).val()
+        $.get("get_food_truck_timings?order_id="+order_id+"&order_date="+order_date, (data, status)=>{
+            console.log(data)
+            $("#timings_id"+order_id).html(data)
+        })
+    }
+</script>
+<div class="p-20">
+    {% for order in orders %}
+        {% set customer = get_customer_name_by_customer(order['customer_id']) %}
+        {% set total_price = namespace(value=0) %}
+        <div class="card-normal mt-20">
+
+            <div class="row">
+                <div class="col-3">Order By</div>
+                <div class="col-3">Date</div>
+                <div class="col-3">Status</div>
+                {% if 'order_type' in order and status != 'Cart' %}
+                <div class="col-3">Order Type</div>
+                {% endif %}
+            </div>
+
+            <div class="row">
+                <div class="col-3">
+                    <div class="h6">{{customer['name1']}} {{customer['name2']}}</div>
+                </div>
+                <div class="col-3">
+                    <div class="h6">{{order['date'].strftime("%d-%m-%Y %I:%M %p")}}</div>
+                </div>
+                <div class="col-3">
+                    <div class="h5">{{order['status']}}</div>
+                </div>
+                <div class="col-3">
+                    <div class="order-type-row">
+                        {% if 'order_type' in order and status != 'Cart' %}
+                            <div class="h5">{{order['order_type']}}</div>
+                        {% endif %}
+
+                        {% if session['role'] == 'customer' and order["status"] in ['Ordered', 'Delivered', 'Cancelled', 'Refunded'] %}
+                            <a href="view_payment_page?order_id={{order['_id']}}" class="btn-small">View Payment</a>
+                        {% endif %}
+
+                        {% if session['role'] == 'food_truck' and (order["status"] == 'Ordered' or order["status"] == 'Delivered') %}
+                            <a  href="view_payment_page?order_id={{order['_id']}}" class="btn-small">View Payment</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <table class="table mt-10">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Price</th>
+                        <th>Ordered Quantity</th>
+                        <th>Unit Price</th>
+                        {% if order['status'] == 'Cart' %}
+                        <th>Remove</th>
+                        {% endif %}
+<!--                        <th>Remove</th>-->
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for order_item in order['order_items'] %}
+                        {% set menu = get_menu_price_by_menu_id(order_item['menu_id']) %}
+                        {% set item_total = float(menu['price']) * float(order_item['quantity']) %}
+                        {% set total_price.value = total_price.value + item_total %}
+
+                        <tr>
+                            <td>
+                                <img src="../static/images/{{menu['image']}}" height="80px" class="product-img">
+<!--                                <div class="h5">{{ menu['food_name'] }}</div>-->
+                            </td>
+                            <td style="color: red;">$ {{"%.2f"|format(float(menu['price']))}}</td>
+                            <td>{{order_item['quantity']}}</td>
+                            <td>$ {{"%.2f"|format(item_total)}}</td>
+                            {% if session['role'] == 'customer' and order['status'] == 'Cart' %}
+                            <td><a href="remove_from_cart?order_id={{order['_id']}}&menu_id={{order_item['menu_id']}}"  class="a-href" style="font-size: medium; font-weight: bold;">Remove</a></td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td class="text-right font-bold">Grand Total:</td>
+                        <td class="font-bold">$ {{"%.2f"|format(total_price.value)}}</td>
+                        <td class="button-cell">
+                            {% if session['role'] == 'customer' and order['status'] == 'Cart' %}
+                                {% set timings = get_timings_by_food_truck_id_and_order_date(order['food_truck_id'], order_date) %}
+                                <form action="view_cart" method="POST">
+                                    <input type="hidden" name="order_id" value="{{order['_id']}}">
+                                    <input type="date" name="order_date" id="order_date{{order['_id']}}" onchange="get_food_truck_timings('{{order._id}}')" value="{{order_date}}" class="order_date" >
+                                    <label for="timings_id{{order['_id']}}">Choose Time:</label>
+                                    <select name="timings_id" id="timings_id{{order['_id']}}" required>
+                                        <option value="" disabled selected>Choose Timing</option>
+                                        {% for timing in timings %}
+                                            {% set location = get_location_by_location_id(timing['location_id']) %}
+                                            <option value="{{timing['_id']}}">{{location['location_name']}} : {{timing['start_time'].strftime("%I:%M %p")}} - {{timing['end_time'].strftime("%I:%M %p")}}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <a class="order-now-btn" href="payment_page?order_id={{order['_id']}}&total_price={{total_price.value}}">Order Now</a>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+
+            <div class="row">
+                <div class="col-3"></div>
+                <div class="col-3"></div>
+                <div class="col-3"></div>
+                {% if session['role'] == 'customer' and order["status"] == 'Ordered' %}
+                    <div class="cancel-cell">
+                        <p class="paragraph">If you cancel your Order you will get only 90%</p>
+                        <a class="btn-small-cancel" href="cancel_order?order_id={{order['_id']}}&total_price={{total_price.value}}">Cancel Order</a>
+                        <a class="btn-small" href="/wrong_order_refund?order_id={{order['_id']}}&total_price={{order['total_price']}}">Request Refund</a>
+                    </div>
+                {% endif %}
+
+                {% if session['role'] == 'food_truck' and order['status'] == 'Ordered' %}
+                    <div class="col-9"></div>
+                    <div class="col-3">
+                        <form action="update_order_status">
+                            <input type="hidden" name="order_id" value="{{order['_id']}}">
+                            <input type="hidden" name="status" value="Preparing">
+                            <input class="btn-small" type="submit" value="Mark as Preparing">
+                        </form>
+                    </div>
+                {% endif %}
+
+                {% if session['role'] == 'food_truck' and order['status'] == 'Preparing' %}
+                    <div class="col-9"></div>
+                    <div class="col-3">
+                        <form action="update_order_status">
+                            <input type="hidden" name="order_id" value="{{order['_id']}}">
+                            <input type="hidden" name="status" value="Prepared">
+                            <input class="btn-small" type="submit" value="Mark as Prepared">
+                        </form>
+                    </div>
+                {% endif %}
+
+                {% if session['role'] == 'food_truck' and order['status'] == 'Prepared' %}
+                {% if order['order_type']=='Pick-up'%}
+                    <div class="col-9"></div>
+                    <div class="col-3">
+                        <form action="update_order_status">
+                            <div>
+                                <input type="hidden" name="order_id" value="{{order['_id']}}">
+                            </div>
+                            <div>
+                                <input type="hidden" name="status" value="Dispatched">
+                            </div>
+                            <div>
+                                <input class="btn-small" type="submit" value="Dispatch">
+                            </div>
+                        </form>
+                    </div>
+                {% endif %}
+                {% endif %}
+
+                {% if session['role'] == 'food_truck' and order['status'] == 'Prepared' %}
+                {% if order['order_type']=='Delivery'%}
+                    <div class="col-9"></div>
+                    <div class="col-3">
+                        <form action="update_order_status">
+                            <div>
+                                <input type="hidden" name="order_id" value="{{order['_id']}}">
+                            </div>
+                            <div>
+                                <input type="hidden" name="status" value="DeliveryBoy Assigned">
+                            </div>
+                            <div>
+                                <input class="btn-small" type="submit" value="Mark as Order">
+
+                            </div>
+                        </form>
+                    </div>
+                {% endif %}
+
+                    {% endif %}
+
+                    {% if session['role'] == 'delivery_boys' and order["status"] == 'DeliveryBoy Assigned' %}
+                        <div class="col-9"></div>
+                        <div class="col-3">
+                            <form action="accept_order" method="POST">
+                                <input type="hidden" name="order_id" value="{{order['_id']}}">
+                                <button type="submit" class="btn-small">Accept Order</button>
+                            </form>
+                        </div>
+                    {% endif %}
+
+
+                <!-- {% if session['role'] == 'delivery_boys' and order["status"] == 'DeliveryBoy Assigned' %}
+                    <div class="col-9"></div>
+                    <div class="col-3">
+                        <form action="assign_now_update">
+                            <div>
+                                <input type="hidden" name="order_id" value="{{order['_id']}}">
+                            </div>
+                            <div>
+                                <input class="btn btn-primary" type="submit" value="Dispatch">
+                            </div>
+                        </form>
+                    </div>
+                {% endif %} -->
+
+                {% if session['role'] == 'customer' and order["status"] == 'Accepted by Delivery Boy' %}
+                    <div class="col-9"></div>
+                    <div class="col-3">
+                        <form action="order_collected" method="POST">
+                            <input type="hidden" name="order_id" value="{{order['_id']}}">
+                            <button type="submit" class="btn-small">Order Collected</button>
+                        </form>
+                    </div>
+                {% endif %}
+
+                {% if session['role'] == 'customer' and order["status"] == 'Dispatched' %}
+                    <div class="col-9"></div>
+                    <div class="col-3">
+                        <form action="dispatched_update">
+                            <div>
+                                <input type="hidden" name="order_id" value="{{order['_id']}}">
+                            </div>
+                            <div>
+                                <input class="btn-small" type="submit" value="Mark as Delivered">
+                            </div>
+                        </form>
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
+            {% endfor %}
+</div>
+
+
+
+

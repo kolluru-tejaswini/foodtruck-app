@@ -1,0 +1,40 @@
+{% include 'admin_head.html' %}
+
+<div class="containe">
+    <div class="form-containe">
+        <div class="register-title">
+            <form action="add_category_action" method="post">
+                <div class="form-group">
+                    <label class="form-label" for="location_name" style="color: black;">Category Name</label>
+                    <input class="form-input" type="text" name="category_name" id="location_name" maxlength="20" placeholder="Enter Category" required>
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" class="register-btn" value="Add Category">
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="cards-contain">
+        <h2 class="cards-title">View Categories</h2>
+        <div class="cards-grid">
+            {% for category in category %}
+            <div class="card">
+                <div class="card-header">
+                    <h3>{{category['category_name']}}</h3>
+                </div>
+                    <div class="card-content">
+                        <p><strong>Category Name:</strong>{{category['category_name']}}</p>
+                    </div>  
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+
+
+
+
+

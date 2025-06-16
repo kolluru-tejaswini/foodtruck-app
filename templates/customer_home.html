@@ -1,0 +1,21 @@
+{%include 'customer_head.html'%}
+
+<!-- <h2>Welcome {{session['role']}}"</h2> -->
+
+<body class="bg-customer-home">
+    <nav class="nav-cust-home">
+        <a href="/customer_home" class="nav-link-cust">Home</a>
+        <form action="view_menu" class="search-bar">
+                <input type="search" name="keyword" id="menu_search" class="input-search" placeholder="Search menu...." onchange="this.form.submit()" autofocus>
+                <button class="btn-search">Search</button>
+        </form>
+        <a href="/view_menu" class="nav-link-cust">Menu</a>
+        <div><a class="nav-link-cust" href="/view_cart?status=Cart">Cart</a></div>
+        <div><a class="nav-link-cust" href="/view_cart?status=Ordered">Orders</a></div>
+        <div><a class="nav-link-cust" href="/view_cart?status=History">History</a></div>
+<!--        <a href="/view_order" class="nav-link-cust">View Order</a>-->
+        <a href="/logout" class="nav-link-cust logout-btn">Logout</a>
+    </nav>
+</body>
+
+

@@ -1,0 +1,88 @@
+{% if session['role'] == 'customer' %}
+    {% include 'customer_head.html' %}
+{% elif session['role'] == 'food_truck' %}
+    {% include 'food_truck_head.html' %}
+{% elif session['role'] == 'delivery_boys' %}
+    {% include 'delivery_boy_head.html' %}
+{% endif %}
+
+<div class="payment-container">
+  <div class="payment-box">
+    <div class="payment-header">
+      <div class="payment-title">Payment Details</div>
+    </div>
+    <div class="payment-content">
+      <div class="payment-row">
+        <div class="payment-label">Card Holder Name:</div>
+        <div class="payment-info">{{payment['card_holder_name']}}</div>
+      </div>
+      <div class="payment-row">
+        <div class="payment-label">Card Number:</div>
+        <div class="payment-info">{{payment['card_number']}}</div>
+      </div>
+      <div class="payment-row">
+        <div class="payment-label">Payment Date:</div>
+        <div class="payment-info">{{payment['payment_date'].strftime("%m/%d/%Y %I:%M %p")}}</div>
+      </div>
+      <div class="payment-row">
+        <div class="payment-label">Amount:</div>
+        <div class="payment-info reds">${{payment['amount']}}</div>
+      </div>
+      <div class="payment-row">
+        <div class="payment-label">Payment Method:</div>
+        <div class="payment-info">{{payment['payment_method']}}</div>
+      </div>
+      <div class="payment-row">
+        <div class="payment-label">CVV:</div>
+        <div class="payment-info">{{payment['cvv']}}</div>
+      </div>
+      <div class="payment-row">
+        <div class="payment-label">Expiry Date:</div>
+        <div class="payment-info">{{payment['expiry_date']}}</div>
+      </div>
+      <div class="payment-row">
+        <div class="payment-label">Status:</div>
+        <div class="payment-info">{{payment['status']}}✅</div>
+      </div>
+      
+
+      {% if 'refund_amount' in payment and 'food_truck_share' in payment %}
+        <div class="payment-row">
+          <div class="payment-label">{% if session['role'] == 'food_truck' %}
+              Refund Given:
+            {% else %}
+              Refund Amount:
+            {% endif %}
+          </div>
+
+          <div class="payment-info">
+            {% if session['role'] == 'customer' %}
+              <div class="green">${{payment['refund_amount']}}</div>
+            {% elif session['role'] == 'food_truck' %}
+              <div>${{payment['refund_amount']}}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="payment-row">
+          <div class="payment-label">{% if session['role'] == 'food_truck' %}
+              Your Earnings:
+            {% else %}
+              Food Truck Share:
+            {% endif %}
+          </div>
+
+          <div class="payment-info">
+            {% if session['role'] == 'food_truck' %}
+              <div class="green">${{payment['food_truck_share']}}</div>
+            {% elif session['role'] == 'customer' %}
+              <div>${{payment['food_truck_share']}}</div>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+    </div>
+    <a href="/view_cart?status=History" class="go-home-button">Go Back</a>
+  </div>
+ 
+</div>

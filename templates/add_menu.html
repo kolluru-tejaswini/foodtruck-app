@@ -1,0 +1,125 @@
+{% include 'food_truck_head.html' %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+  $("#box").hide()
+  $("#add_menu").on("change",function(){
+    if ($('#add_menu').is(':checked')) {
+        console.log('Checkbox is checked');
+        $("#box").show()
+    } else {
+        console.log('Checkbox is NOT checked');
+        $("#box").hide()
+    }
+  });
+  $("#close").on("click", ()=>{
+    $("#box").hide()
+  })
+});
+</script>
+<style>
+    .btns {
+display: block;
+width: 100%;
+
+margin-left: -600px;
+padding: 7px;
+border: none;
+border-radius: 7px;
+text-decoration: none;
+text-align: center;
+color: white;
+font-size: 100%;
+}
+.btns-primary{background-color: var(--color-primary); color: white;}
+</style>
+
+<div class="row mt-100">
+    <div class="col-2"></div>
+    <div class="col-8"></div>
+    <div class="col-2">
+        <input type="checkbox" id="add_menu">
+        <label class="btns btns-primary" for="add_menu">Add Food</button>
+    </div>
+</div>
+    <div class="box" id="box">
+        <form action="add_menu_action" method="post" enctype="multipart/form-data">
+            <div class="row">
+                <div class="col-2"></div>
+                <div class="col-8">
+                    <div class="form-title text-white">Add Menu Item</div>
+                </div>
+                <div class="col-2">
+                    <label class="text-red" for="add_menu" id="close">❌</label>
+                </div>
+            </div>
+            <label for="food_name" class="form-label wh">Food Name</label>
+            <div class="form-group">
+                <input type="text" id="food_name" name="food_name" placeholder="Enter Food Name" class="input-field">
+            </div>
+
+            <label for="image" class="form-label wh">Image</label>
+            <div class="form-group">
+                <div class="file-input-container">
+                    <input type="file" name="image" id="image" class="input-field">
+                </div>
+            </div>
+
+            <label for="image" class="form-label wh">Category</label>
+            <div class="form-group">
+                <select class="file-input-container p-10" name="category_id" >
+                    <option value=" ">Please Select Category</option>
+                    {% for category in categorys %}
+                        <option value="{{category['_id']}}" >{{category['category_name']}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <label for="price" class="wh form-label wh">Price</label>
+            <div class="form-group">
+                <input type="number" id="price" name="price" class="input-field" required placeholder="Enter Product Price"  min="0">
+            </div>
+
+            <label for="description" class="form-label wh">Description</label>
+            <div class="form-group">
+                <textarea id="description" name="description" maxlength="60" class="input-field" placeholder="Enter Description" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Add Food" class="submit-btn">
+            </div>
+        </form>
+    </div>
+
+<div class="menu-section">
+    <div class="menu-header-container">
+        <!-- <h2 class="menu-head">View Menu</h2> -->
+        <form action="add_menu" class="search-form">
+            <div class="search-wrapper-food">
+                <input type="search" name="keyword" id="menu_search" class="input-search-food" placeholder="Search menu....">
+                <button class="btn-search-food">Search</button>
+            </div>
+        </form>
+    </div>
+    <div class="menu-grid">
+        {% for menu in menus %}
+            <div class="menu-card">
+                <div class="menu-image">
+                    <img src="../static/images/{{menu['image']}}">{{menu['food_name']}}
+                </div>
+                <div class="menu-items">
+                    <h3 class="menu-title">{{menu['food_name']}}</h3>
+                    <p class="menu-price">${{menu['price']}}</p>
+                    <p class="menu-description">{{menu['description']}}</p>
+                    <a href="/edit_menu/{{menu['_id']}}" class="btne btne-primary" style="margin-top: 10px; display: inline-block;">Update</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+
+
+
+

@@ -1,0 +1,29 @@
+{% include 'links.html' %}
+
+<div class="row">
+    <div class="col-4"></div>
+    <div class="col-4 mt-50">
+        <div class="card message-card">
+            <div class="text-center p-5">
+                <div class="message-icon mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="red" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="15" y1="9" x2="9" y2="15"></line>
+                  <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+
+                </div>
+                <h3 class="message-title mb-3">Your Order was cancelled successfully</h3>
+                <!-- <div class="message-text">{{message}}</div> -->
+                <div class="message-text red">Total Amount: ${{total_price}}</div>
+                <div class="message-text" style="color: green;">Refunded Amount 90%: ${{refund_amount}}</div>
+                <div class="message-text">Food Truck Share 10%: ${{food_truck_share}}</div>
+                <div><a class="btn btn-primary" href="/view_cart?status=History">View Cancellation</a></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-4"></div>
+</div>
+
+
+

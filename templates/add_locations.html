@@ -1,0 +1,76 @@
+{% include 'admin_head.html' %}
+
+<div class="contain">
+    <div class="form-contain">
+        <div class="register-title" style="color: red;">Add Location</div>
+        <form action="add_locations_action" method="post">
+            <div class="form-group">
+                <label class="form-label" for="location_name" maxlength="20" style="color: black;">Location Name</label>
+                <input class="form-input" type="text" name="location_name" id="location_name" placeholder="Location Name" maxlength="25" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="address" style="color: black;">Address</label>
+                <textarea class="form-textarea" id="address" name="address" placeholder="Enter Address" required minlength="10" maxlength="50"></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="state" style="color: black;">State</label>
+                    <input type="text" class="form-select" id="state" name="state" maxlength="20" placeholder="Enter State" required>
+                    <svg class="form-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1F2937" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="city" style="color: black;">City</label>
+                    <input type="text" class="form-select" id="city" name="city" maxlength="20" placeholder="Enter City" required>
+                    <svg class="form-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1F2937" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="zipcode" style="color: black;">Zipcode</label>
+                <input class="form-input" type="number" id="zipcode" name="zipcode" placeholder="Enter Zipcode" min="10000" max="99999" required>
+            </div>
+            
+            <script>
+                const zipcodeInput = document.getElementById('zipcode');
+                zipcodeInput.addEventListener('input', function () {
+                    if (this.value.length > 5) {
+                        this.value = this.value.slice(0, 5);
+                    }
+                });
+            </script>
+            
+            <div class="form-group">
+                <input type="submit" class="register-btn" value="Add Location">
+            </div>
+        </form>
+    </div>
+
+    <div class="cards-contain">
+        <h2 class="cards-title"  style="color: red;">View Locations</h2>
+        <div class="cards-grid">
+            {% for location in locations %}
+            <div class="card">
+                <div class="card-header"  style="color: red;">
+                    <h3>{{location['location_name']}}</h3>
+                </div>
+                <div class="card-content">
+                    <p><strong>Address:</strong> {{location['address']}}</p>
+                    <p><strong>City:</strong> {{location['city']}}</p>
+                    <p><strong>State:</strong> {{location['state'] }}</p>
+                    <p><strong>Zipcode:</strong> {{location['zipcode']}}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+

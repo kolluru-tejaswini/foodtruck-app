@@ -1,0 +1,6 @@
+<option value="">Choose Timings</option>
+{% for timing in timings %}
+    {% set location = get_location_by_location_id(timing['location_id']) %}
+    <option value="{{timing['_id']}}">{{location['location_name']}} : {{timing['start_time'].strftime("%I:%M %p")}} - {{timing['end_time'].strftime("%I:%M %p")}}</option>
+{% endfor %}
+

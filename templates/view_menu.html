@@ -1,0 +1,168 @@
+
+{% include 'customer_home.html' %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<!-- Toast Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+      {% for category, message in messages %}
+        <div class="toast-message {{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<style>
+.toast-message {
+    padding: 12px 20px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    font-size: 15px;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0px 3px 8px rgba(0,0,0,0.2);
+    animation: fadeOut 3s ease-out forwards;
+}
+.toast-message.success { background-color: lightgreen; }
+.toast-message.info { background-color: #17a2b8; }
+.toast-message.error { background-color: #dc3545; }
+
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    70% { opacity: 1; }
+    100% { opacity: 0; display: none; }
+}
+</style>
+
+<script>
+    function increment(id) {
+        var quantityInput = document.getElementById("quantity" + id);
+        var currentValue = parseInt(quantityInput.value);
+        if (!isNaN(currentValue)) {
+            quantityInput.value = currentValue + 1;
+        }
+        $("#quantity" + id).val(quantityInput.value);
+    }
+
+    function decrement(id) {
+        var quantityInput = document.getElementById("quantity" + id);
+        var currentValue = parseInt(quantityInput.value);
+        if (!isNaN(currentValue) && currentValue > 1) {
+            quantityInput.value = currentValue - 1;
+        }
+        $("#quantity" + id).val(quantityInput.value);
+    }
+
+    setTimeout(() => {
+        const container = document.getElementById('toast-container');
+        if (container) container.remove();
+    }, 3000);
+</script>
+
+<div class="menu-section">
+    {% if session['role']=='food_truck' %}
+        {% include 'food_truck_head.html' %}
+    {% endif %}
+
+    {% if session['role']=='customer' %}
+    {% endif %}
+
+    <div class="row">
+        <div class="col-10">
+            {% if session['role']=='food_truck' %}
+                <div class="text-center mt-15 text-title">
+                    View Food Items
+                </div>
+        </div>
+        <div class="col-2 p-15">
+            <button class="btn" ><a class="href" href="/add_menu" >Add Menu</a></button>
+            {% endif %}
+        </div>
+    </div>
+
+<!-- {% if timing==None %}
+    <div style="font-weight: bold; color:red">Food Truck Not Available at the moment. You can order for the future.</div>
+ {% else %}
+    <div style="font-weight:bold;">Available Time: {{timing['start_time'].strftime("%I:%M %p")}} - {{timing['end_time'].strftime("%I:%M %p")}}</div>
+{% endif %} -->
+{% if food_truck_id %}
+    {% if timing == None %}
+        <div style="font-weight: bold; color:red">Food Truck Not Available at the moment. You can order for the future.</div>
+    {% else %}
+        <div style="font-weight:bold;">Available Time: {{timing['start_time'].strftime("%I:%M %p")}} - {{timing['end_time'].strftime("%I:%M %p")}}</div>
+    {% endif %}
+{% endif %}
+
+    
+    {% if session['role']=="customer" %}
+    <form action="view_menu" method="get">
+        <div class="row">
+            <div class="col-4">
+                <div class="p-10">
+                    <label for="food_truck_id">Select By Food Truck</label>
+                    <div class="form-group">
+                        <select class="form-control" name="food_truck_id" id="food_truck_id" onchange="this.form.submit()">
+                            <option value="" selected disabled>Please Select Food Truck</option>
+                            {% for food_truck in food_trucks %}
+                                <option value="{{food_truck['_id']}}"
+                                    {% if str(food_truck['_id']) == str(food_truck_id) %} selected {% endif %}>
+                                    {{food_truck['name']}} ({{food_truck['food_truck_category']}})
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="p-10">
+                    <label for="category_id">Select By Food Category</label>
+                    <div class="form-group">
+                        <select class="form-control" name="category_id" id="category_id" onchange="this.form.submit()">
+                            <option value="" selected disabled>Please Select Food Category</option>
+                            {% for category in categorys %}
+                                <option value="{{ category['_id'] }}"
+                                    {% if str(category['_id']) == str(category_id) %} selected {% endif %}>
+                                    {{ category['category_name'] }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    {% endif %}
+
+    <div class="menu-header-container">
+        <h2 class="menu-head">View Menu</h2>
+    </div>
+    <div class="menu-grid">
+        {% for menu in menus %}
+            <div class="menu-card">
+                <div class="menu-image">
+                    <img src="../static/images/{{menu['image']}}" alt="{{menu['food_name']}}">
+                </div>
+                <div class="menu-items">
+                    <div class="menu-title">{{menu['food_name']}}</div>
+
+                    <div class="menu-price-row">
+                        <div class="menu-price">${{menu['price']}}</div>
+
+                        <form class="form-cart" action="add_to_cart" method="post">
+                            <input type="hidden" name="menu_id" value="{{menu['_id']}}">
+                            <div class="quantity-row">
+                                <div class="quantity-btn decrement" onclick="decrement('{{menu._id}}')">-</div>
+                                <input type="number" name="quantity" value="1" min="1" max="100" id="quantity{{menu['_id']}}" class="select-quantity">
+                                <div class="quantity-btn increment" onclick="increment('{{menu._id}}')">+</div>
+                                <button type="submit" class="btn-add-to-cart">Add to Cart</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="menu-description">{{menu['description']}}</div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>

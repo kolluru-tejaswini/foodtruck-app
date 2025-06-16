@@ -1,0 +1,32 @@
+
+{% include 'food_truck_head.html' %}
+
+<div class="message-container">
+    <div class="message-card">
+        <div class="message-icon">
+            {% if "password changed successfully" in message.lower() %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    <path d="M8 11l3 3 5-5"></path>
+                </svg>
+            {% else %}
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="red" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="15" y1="9" x2="9" y2="15"></line>
+                <line x1="9" y1="9" x2="15" y2="15"></line>
+              </svg>
+            {% endif %}
+        </div>
+        <h3 class="message-title">
+            {% if "password changed successfully" in message.lower() %}
+                Password Updated
+            {% else %}
+            {{message}}
+            {% endif %}
+        </h3>
+        <div class="message-actions">
+            <a href="{{session['role']}}_home" class="message-button">Back to Home</a>
+        </div>
+    </div>
+</div>
+

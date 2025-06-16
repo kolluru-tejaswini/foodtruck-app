@@ -1,0 +1,35 @@
+{% include 'food_truck_head.html' %}
+
+<div class="edit-form-container">
+    <h2>Edit Menu Item</h2>
+    <form action="/update_menu/{{menu['_id']}}" method="post" enctype="multipart/form-data">
+
+        <label>Food Name</label>
+        <input type="text" name="food_name" class="input-fielder" value="{{menu['food_name']}}" required>
+
+        <label>Price</label>
+        <input type="number" name="price" class="input-fielder" value="{{menu['price']}}" required>
+
+        <label>Description</label>
+        <textarea name="description" class="input-fielder" rows="4" required>{{menu['description']}}</textarea>
+
+        <label>Category</label>
+        <select name="category_id" class="input-fielder">
+            {% for category in categorys %}
+                <option value="{{category['_id']}}" {% if category['_id'] == menu['category_id'] %} selected {% endif %}>
+                    {{category['category_name']}}
+                </option>
+            {% endfor %}
+        </select>
+
+        <div class="current-image">
+            <label>Current Image</label><br>
+            <img src="../static/images/{{menu['image']}}" alt="Current Image">
+        </div>
+
+        <label>Change Image (optional)</label>
+        <input type="file" name="image" class="input-fielder">
+
+        <input type="submit" value="Update Menu Item" class="submit-button">
+    </form>
+</div>
